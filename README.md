@@ -11,7 +11,7 @@ Anyone who keeps profiles on several platforms and wants to know what each one s
 ## Requirements
 
 - Node 20 or newer. The scripts use only the standard library, there is nothing to install.
-- A browser tool for the agent that can (a) open a page in your signed-in browser session, (b) return the page text and (c) run JavaScript in the page. The skill was built and tested with Claude in Chrome. No other browser tool has been verified. The steps in [references/PROCEDURE.md](references/PROCEDURE.md) are written generically with the Claude in Chrome tool names beside them.
+- A browser tool for the agent that can (a) open a page in your signed-in browser session, (b) return the page text and (c) run JavaScript in the page. The skill was built and tested with Claude in Chrome on real platforms. The quick start below was also run end to end with the built-in browser of the Claude desktop app. No other browser tool has been verified. The steps in [references/PROCEDURE.md](references/PROCEDURE.md) are written generically with the Claude in Chrome tool names beside them.
 
 ## Install
 
@@ -118,7 +118,7 @@ A platform is any folder that holds `CURRENT-STATE.md` or a `_SNAPSHOTS` folder,
 - Text only. Images, uploaded files and anything a site shows without text are not captured. Check those on screen.
 - Sites change and some hide content behind controls. A snapshot is a record of what the page text showed at that moment.
 - Only your own accounts. Check the terms of each platform before you automate reading it.
-- The capture was built and tested with Claude in Chrome. Another browser tool needs the same three abilities and may need changes to the capture call.
+- The capture was built and tested with Claude in Chrome, and the quick start was run with the built-in browser of the Claude desktop app. Another browser tool needs the same three abilities and may need changes to the capture call.
 - `node --test tests` does not work on Node 24 because a folder argument is treated as a module. Use `node --test tests/*.test.mjs`.
 
 ## Tests
