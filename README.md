@@ -21,7 +21,7 @@ After publication: `npx skills add <owner>/extract-my-profile`
 
 ## Quick start
 
-The example runs on two synthetic profile pages served from your own computer. No account is needed. Run the commands from this folder.
+The example runs on two synthetic profile pages served from your own computer. No account is needed. Run the commands from this folder. Every command accepts `--root <dir>`, and the paths in the steps assume the default `./profiles`.
 
 1. Create an empty collection. Its root is `--root <dir>`, else the environment variable `EXTRACT_MY_PROFILE_ROOT`, else `./profiles` under the current directory.
 
@@ -29,23 +29,35 @@ The example runs on two synthetic profile pages served from your own computer. N
    node scripts/init.mjs
    ```
 
-2. Serve the example pages in a second terminal. The server listens on 127.0.0.1 only. Leave it running.
+2. Serve the example pages in a second terminal. The server listens on 127.0.0.1 only. Leave it running. An agent may start it as a background process instead.
 
    ```
    node scripts/serve-example.mjs --port 4173
    ```
 
-3. Ask the agent to open `http://127.0.0.1:4173/demo-platform/profile-v1.html` in a new tab and read it. The agent returns the page text and runs `scripts/browser-capture.js` in the page on the `main` element. The result holds a fingerprint of eight groups of eight hex characters.
+3. Ask the agent to open `http://127.0.0.1:4173/demo-platform/profile-v1.html` in a new tab and read it. The agent returns the page text and runs `scripts/browser-capture.js` in the page. The page-text tool names the element it read in a `Source element:` line, and that element is the selector. For the example it is `main`. To get the exact text to paste into the browser tool's JavaScript call, run:
 
-4. The agent writes the page text unchanged to a scratch file and saves the snapshot. `--create` makes the platform folder because `demo-platform` is new.
+   ```
+   node scripts/capture-call.mjs main
+   ```
+
+   It prints `await (` + the function from `browser-capture.js` without its comment block + `)('main')`. Paste it as printed, without shortening it. A second argument selects the mode, `innertext` (default) or `composed`. The result holds a fingerprint of eight groups of eight hex characters.
+
+4. The agent writes the page text to a scratch file and saves the snapshot. The page text is everything after the `---` line of the page-text output, unchanged. Leading and trailing blank lines do not matter, because `snapshot.mjs` and the capture function normalize the text the same way: line endings, no-break spaces and zero-width characters, runs of spaces and tabs inside a line, spaces at the start and end of each line, and blank lines at the start and end of the text. Blank lines between lines are kept. `--create` makes the platform folder because `demo-platform` is new.
 
    ```
    node scripts/snapshot.mjs save --create --platform demo-platform --page profile --url http://127.0.0.1:4173/demo-platform/profile-v1.html --input <scratch file> --expect-sha256 "<fingerprint>"
    ```
 
-   The script prints the snapshot file name and `new`.
+   Paste the fingerprint as returned, eight groups separated by spaces, inside double quotes. The script prints one line of JSON with the keys `file`, `sha256`, `previous`, `status` and `capture_check`:
 
-5. Switch the tab to `profile-v2.html`, which differs from v1 in the headline, one skill and the hourly rate. Capture and save it the same way, with the v2 URL and the new fingerprint. The script prints `changed`.
+   ```
+   {"file":"2026-01-15-0900-profile.txt","sha256":"<64 hex characters>","previous":null,"status":"new","capture_check":"browser-sha256 <64 hex characters>"}
+   ```
+
+   `previous` is the file name of the earlier snapshot of the page, or `null` for the first one.
+
+5. Switch the tab to `profile-v2.html`, which differs from v1 in the headline, one skill and the hourly rate. Capture and save it the same way, with the v2 URL and the new fingerprint. The script prints `changed`. A second snapshot of the same page saved within the same minute gets the suffix `-2`, for example `2026-01-15-0900-profile-2.txt`.
 
 6. Compare the two reads.
 
@@ -53,13 +65,20 @@ The example runs on two synthetic profile pages served from your own computer. N
    node scripts/diff.mjs --platform demo-platform
    ```
 
-7. Write `profiles/demo-platform/CURRENT-STATE.md` from [references/CURRENT-STATE-TEMPLATE.md](references/CURRENT-STATE-TEMPLATE.md). Set `Category: None`, because the key `demo-platform` has one segment, and set `Last snapshot` to the v2 snapshot file. Then add a line under `## Verified` in `profiles/PROFILES.md`:
+7. Write `profiles/demo-platform/CURRENT-STATE.md` from [references/CURRENT-STATE-TEMPLATE.md](references/CURRENT-STATE-TEMPLATE.md). Set `Category: None`, because the key `demo-platform` has one segment, and set `Last snapshot` to the `file` value printed by the v2 save command, prefixed with `_SNAPSHOTS/`, for example `_SNAPSHOTS/2026-01-15-0900-profile-2.txt`. The template shows the optional suffix as `[-2]`. Write the file name as printed, without brackets. `Last verified` is the date of the read. Then add a line under `## Verified` in `profiles/PROFILES.md`:
 
    ```
    - [Demo platform](demo-platform/CURRENT-STATE.md), verified YYYY-MM-DD
    ```
 
    Use the same date as `Last verified` in the state file.
+
+   The minimum a state file needs to pass `validate.mjs`:
+
+   - Line 1 reads `# <name> profile, current state`.
+   - The header lines `Last verified`, `Status`, `Owner`, `Profile URL`, `Category` and `Last snapshot`, once each and in that order. `Last verified` is a real `YYYY-MM-DD` date. `Status` and `Owner` are not empty. `Profile URL` is an http or https URL. `Category` is the first folder of the platform key, or `None` when the key has one segment. `Last snapshot` is `None` or `_SNAPSHOTS/<file>` naming an existing snapshot whose hash is correct.
+   - The six sections `## What the platform is`, `## Profile`, `## Settings`, `## Not read`, `## Open` and `## Change history`, once each and in that order, with no other `##` section. A section may be empty. `###` subsections are not checked.
+   - A matching line under `## Verified` in `PROFILES.md`, with the same date as `Last verified`.
 
 8. Check the result.
 
@@ -68,9 +87,35 @@ The example runs on two synthetic profile pages served from your own computer. N
    node scripts/check-approved.mjs
    ```
 
-   Both exit 0. To try the approved-text check, add the headline to `APPROVED-PROFILE-TEXTS.md` and `.json` and run `check-approved.mjs` again.
+   Both exit 0. This step is optional: to try the approved-text check, add the headline to both approved-text files and run `check-approved.mjs` again. The Markdown file holds one `##` section per text, for the reader. The JSON file is what the scripts read. Each text needs an `id`, a `source` of type `inline`, the `text` and the `platforms` it belongs on.
 
-Stop the example server with Ctrl+C. For a real platform, use a key such as `linkedin` or `contract/aquent` and the real page URLs. A key is any folder path below the root, and the first folder serves as the category.
+   `APPROVED-PROFILE-TEXTS.md`, after the lines `init.mjs` wrote:
+
+   ```
+   ## Headline
+
+   Senior product designer for data tools
+   ```
+
+   `APPROVED-PROFILE-TEXTS.json`:
+
+   ```
+   {
+     "schema": "approved-profile-texts-v1",
+     "texts": [
+       {
+         "id": "headline",
+         "source": { "type": "inline" },
+         "text": "Senior product designer for data tools",
+         "platforms": ["demo-platform"]
+       }
+     ]
+   }
+   ```
+
+   `check-approved.mjs` then prints `present` for `headline` on `demo-platform` and exits 0. With the v1 snapshot as the latest one it would print `differs` and exit 1.
+
+Stop the example server with Ctrl+C in its terminal. If an agent started it as a background process, stop the process that runs `serve-example.mjs`. For a real platform, use a key such as `linkedin` or `contract/aquent` and the real page URLs. A key is any folder path below the root, and the first folder serves as the category.
 
 ## Scripts
 
@@ -80,6 +125,7 @@ All scripts take `--root`. Exit codes: 0 ok, 1 check failure, 2 usage error.
 | --- | --- |
 | `scripts/init.mjs` | Create an empty collection: `PROFILES.md`, `APPROVED-PROFILE-TEXTS.md` and `.json`, a short README and a `.gitignore` for `_SNAPSHOTS/`. Refuses to overwrite any existing file. |
 | `scripts/browser-capture.js` | Runs in the page. Fingerprints the text of the source element with the same normalization as the scripts. Mode `composed` reads inside web components and form fields. |
+| `scripts/capture-call.mjs [selector] [mode]` | Prints the text to paste into the browser tool's JavaScript call: `browser-capture.js` without its comment block, called on the selector (default `main`) in the mode (`innertext` default, or `composed`). Exit 2 for a bad mode or a selector with a single quote or backslash. |
 | `scripts/snapshot.mjs save --platform <key> --page <page> --url <url> --input <file> [--expect-sha256 <fingerprint>] [--create]` | Save a verbatim snapshot with hash. With the fingerprint, refuse a copy that differs from the page. Reports `new`, `unchanged` or `changed`. |
 | `scripts/diff.mjs --platform <key> [--page <page>]` | Line diff of the two latest snapshots per page, as Markdown. |
 | `scripts/check-approved.mjs [--platform <key>]` | Approved texts against the latest snapshots: `present`, `missing`, `differs`, `no-snapshot`, `unknown-platform`, `source-unresolved`. |

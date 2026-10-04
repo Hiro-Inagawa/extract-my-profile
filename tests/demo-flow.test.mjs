@@ -93,7 +93,7 @@ test('first-time flow with scripts only: init, two snapshots, diff, state from t
     .replace('Owner: <Name of the person the profile belongs to>', 'Owner: Tessa Marlowe')
     .replace('Profile URL: https://...', `Profile URL: ${BASE_URL}/profile-v2.html`)
     .replace(/^Category: .*$/m, 'Category: None')
-    .replace('Last snapshot: _SNAPSHOTS/YYYY-MM-DD-HHMM-<page>.txt', `Last snapshot: _SNAPSHOTS/${secondResult.file}`);
+    .replace('Last snapshot: _SNAPSHOTS/YYYY-MM-DD-HHMM-<page>[-2].txt', `Last snapshot: _SNAPSHOTS/${secondResult.file}`);
   await writeFile(join(root, 'demo-platform', 'CURRENT-STATE.md'), state);
 
   const registryFile = join(root, 'PROFILES.md');

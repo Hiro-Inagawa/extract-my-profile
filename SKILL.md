@@ -24,14 +24,14 @@ Needs a browser tool that can (a) open a page in the user's signed-in browser se
 | --- | --- | --- |
 | Open a page | open URL in the signed-in session | `tabs_create_mcp`, `navigate` |
 | Page text | return the page text | `get_page_text` |
-| Fingerprint | run `scripts/browser-capture.js` in the page | `javascript_tool` |
+| Fingerprint | run `scripts/browser-capture.js` in the page, using the text that `node scripts/capture-call.mjs <selector> [mode]` prints | `javascript_tool` |
 
 ## Procedure
 
 Follow [references/PROCEDURE.md](references/PROCEDURE.md). In short:
 
 1. Read `PROFILES.md` and the platform's `CURRENT-STATE.md`.
-2. Open each profile page. Read its text and fingerprint the same element in one batch.
+2. Open each profile page. Read its text and fingerprint the same element in one batch. Get the text to run in the page from `node scripts/capture-call.mjs <selector> [mode]`, where the selector is the element named in the page-text tool's `Source element:` line. Paste it as printed.
 3. Save the text to a scratch file, then `node scripts/snapshot.mjs save ... --expect-sha256 "<fingerprint>"`, which refuses a copy that differs from the page. Then `node scripts/diff.mjs ...`.
 4. Write `CURRENT-STATE.md` from [references/CURRENT-STATE-TEMPLATE.md](references/CURRENT-STATE-TEMPLATE.md), with values taken from the snapshot.
 5. Run `node scripts/check-approved.mjs --platform <key>` and `node scripts/validate.mjs --platform <key>`.

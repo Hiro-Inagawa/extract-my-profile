@@ -5,7 +5,7 @@ Status: Current authority for what the <Platform name> profile says today
 Owner: <Name of the person the profile belongs to>
 Profile URL: https://...
 Category: <First folder of the platform key, or None when the key has one segment>
-Last snapshot: _SNAPSHOTS/YYYY-MM-DD-HHMM-<page>.txt
+Last snapshot: _SNAPSHOTS/YYYY-MM-DD-HHMM-<page>[-2].txt
 
 ## What the platform is
 
