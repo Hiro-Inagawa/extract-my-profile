@@ -17,7 +17,11 @@ Anyone who keeps profiles on several platforms and wants to know what each one s
 
 Copy this folder into the skills folder of your agent. For Claude Code that is `~/.claude/skills/extract-my-profile`. The skill is found by the `name` in `SKILL.md`.
 
-After publication: `npx skills add <owner>/extract-my-profile`
+Or install it with the skills CLI:
+
+```
+npx skills add Hiro-Inagawa/extract-my-profile --global --agent claude-code
+```
 
 ## Quick start
 
