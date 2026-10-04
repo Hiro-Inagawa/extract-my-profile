@@ -1,0 +1,37 @@
+{
+  "schema": "approved-profile-texts-v1",
+  "texts": [
+    {
+      "id": "alpha-summary",
+      "source": {
+        "type": "inline"
+      },
+      "text": "I design AI products for teams that need clarity, from first research to shipped interface.",
+      "platforms": [
+        "contract/alpha"
+      ]
+    },
+    {
+      "id": "alpha-headline",
+      "source": {
+        "type": "inline"
+      },
+      "text": "Senior product designer for AI platforms",
+      "platforms": [
+        "contract/alpha"
+      ]
+    },
+    {
+      "id": "resume-profile",
+      "source": {
+        "type": "resume-section",
+        "file": "__sources/resume.md",
+        "heading": "## PROFILE"
+      },
+      "platforms": [
+        "contract/alpha",
+        "social media/gamma/profile"
+      ]
+    }
+  ]
+}

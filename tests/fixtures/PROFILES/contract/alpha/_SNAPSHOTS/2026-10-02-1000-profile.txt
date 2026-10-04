@@ -1,0 +1,13 @@
+url: https://alpha.example.test/people/fixture
+captured_at: 2026-10-02T10:00:00-04:00
+page: profile
+sha256: ad2fc7da0ed8c5e911c68372dad65a8ef37fb736bd55a4ae2d6e23e5aa3c2207
+tool: extract-my-profile/snapshot.mjs
+---
+Fixture Alpha profile page
+Headline: Senior product designer for AI platforms
+About
+I design AI products for teams that need clarity, from first research to shipped interface.
+I am a product designer who builds design systems for fictional teams.
+Skills: Figma, Prototyping, Research
+Rate: $100/hr

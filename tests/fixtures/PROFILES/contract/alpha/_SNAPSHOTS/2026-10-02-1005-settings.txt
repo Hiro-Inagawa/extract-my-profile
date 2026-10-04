@@ -1,0 +1,8 @@
+url: https://alpha.example.test/settings
+captured_at: 2026-10-02T10:05:00-04:00
+page: settings
+sha256: 08d0648d807f0b5214a141344d590479aac7035b7a0dc6aad769301f3a4675ef
+tool: extract-my-profile/snapshot.mjs
+---
+Visibility: Public
+Availability: Open to contract work

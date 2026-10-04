@@ -1,0 +1,12 @@
+url: https://alpha.example.test/people/fixture
+captured_at: 2026-10-01T09:00:00-04:00
+page: profile
+sha256: 8ca8610dcc6bce24b07e5edc8146ef22d05cc64980e5ee0f3eefe58ce7830792
+tool: extract-my-profile/snapshot.mjs
+---
+Fixture Alpha profile page
+Headline: Product designer for AI platforms
+About
+I design AI products for teams that need clarity, from first research to shipped interface.
+I am a product designer who builds design systems for fictional teams.
+Rate: $90/hr
