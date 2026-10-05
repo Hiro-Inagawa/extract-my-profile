@@ -46,10 +46,18 @@ test('the two example pages differ in exactly three places', async () => {
   const v1 = (await pageText('profile-v1.html')).split('\n');
   const v2 = (await pageText('profile-v2.html')).split('\n');
   assert.equal(v2.length, v1.length + 1);
-  assert.ok(v1.includes('Product designer for data tools'));
-  assert.ok(v2.includes('Senior product designer for data tools'));
-  assert.ok(v1.includes('Hourly rate: $85') && v2.includes('Hourly rate: $95'));
-  assert.ok(!v1.includes('Prototyping in code') && v2.includes('Prototyping in code'));
+  assert.ok(v1.includes('Product Designer (UX/UI)'));
+  assert.ok(v2.includes('Product Designer (UX/UI) | Fintech'));
+  assert.ok(v1.includes('Los Angeles, California') && v2.includes('Los Angeles Metropolitan Area'));
+  assert.ok(!v1.includes('Design systems') && v2[v2.indexOf('Wordpress') + 1] === 'Design systems');
+  assert.equal(v1.filter((line) => !v2.includes(line)).length, 2);
+  assert.equal(v2.filter((line) => !v1.includes(line)).length, 3);
+  for (const text of [v1, v2]) {
+    assert.ok(text.includes('Haley Meadows'));
+    for (const heading of ['About', 'Experience', 'Education', 'Skills', 'Languages', 'Featured', 'Projects', 'Recommendations']) assert.ok(text.includes(heading), heading);
+    assert.equal(text.filter((line) => line === 'Nothing added yet').length, 3);
+    assert.ok(text.includes('Kestrel Pay, Mar 2025 to Present') && text.includes('Lumo Finance, Jun 2022 to Mar 2025'));
+  }
   assert.ok(!v1.join('\n').includes('<') && !v1.some((line) => /title|style|font-family/i.test(line)));
 });
 
@@ -77,11 +85,11 @@ test('first-time flow with scripts only: init, two snapshots, diff, state from t
   const diff = run('diff.mjs', ['--root', root, '--platform', 'demo-platform']);
   assert.equal(diff.status, 0, diff.stderr);
   for (const line of [
-    '- Product designer for data tools',
-    '+ Senior product designer for data tools',
-    '- Hourly rate: $85',
-    '+ Hourly rate: $95',
-    '+ Prototyping in code',
+    '- Product Designer (UX/UI)',
+    '+ Product Designer (UX/UI) | Fintech',
+    '- Los Angeles, California',
+    '+ Los Angeles Metropolitan Area',
+    '+ Design systems',
   ]) {
     assert.ok(diff.stdout.includes(line), `diff lacks: ${line}`);
   }
@@ -90,7 +98,7 @@ test('first-time flow with scripts only: init, two snapshots, diff, state from t
     .replace('# <Platform name> profile, current state', '# Demo platform profile, current state')
     .replace('Last verified: YYYY-MM-DD', 'Last verified: 2026-10-04')
     .replace('Status: Current authority for what the <Platform name> profile says today', 'Status: Current authority for what the Demo platform profile says today')
-    .replace('Owner: <Name of the person the profile belongs to>', 'Owner: Tessa Marlowe')
+    .replace('Owner: <Name of the person the profile belongs to>', 'Owner: Haley Meadows')
     .replace('Profile URL: https://...', `Profile URL: ${BASE_URL}/profile-v2.html`)
     .replace(/^Category: .*$/m, 'Category: None')
     .replace('Last snapshot: _SNAPSHOTS/YYYY-MM-DD-HHMM-<page>[-2].txt', `Last snapshot: _SNAPSHOTS/${secondResult.file}`);
@@ -108,16 +116,16 @@ test('first-time flow with scripts only: init, two snapshots, diff, state from t
     JSON.stringify({
       schema: 'approved-profile-texts-v1',
       texts: [
-        { id: 'headline', source: { type: 'inline' }, text: 'Senior product designer for data tools', platforms: ['demo-platform'] },
-        { id: 'old-rate', source: { type: 'inline' }, text: 'Hourly rate: $85', platforms: ['demo-platform'] },
+        { id: 'headline', source: { type: 'inline' }, text: 'Product Designer (UX/UI) | Fintech', platforms: ['demo-platform'] },
+        { id: 'old-location', source: { type: 'inline' }, text: 'Los Angeles, California', platforms: ['demo-platform'] },
       ],
     }),
   );
-  await writeFile(join(root, 'APPROVED-PROFILE-TEXTS.md'), '# Approved profile texts\n\n## Headline\n\nSenior product designer for data tools\n\n## Old rate\n\nHourly rate: $85\n');
+  await writeFile(join(root, 'APPROVED-PROFILE-TEXTS.md'), '# Approved profile texts\n\n## Headline\n\nProduct Designer (UX/UI) | Fintech\n\n## Old location\n\nLos Angeles, California\n');
   const approved = run('check-approved.mjs', ['--root', root]);
   assert.equal(approved.status, 1, approved.stdout);
   assert.match(approved.stdout, /\| headline \| demo-platform \| present \|/);
-  assert.match(approved.stdout, /\| old-rate \| demo-platform \| differs \|/);
+  assert.match(approved.stdout, /\| old-location \| demo-platform \| differs \|/);
   assert.equal(run('validate.mjs', ['--root', root]).status, 0);
 });
 

@@ -25,7 +25,7 @@ npx skills add Hiro-Inagawa/extract-my-profile --global --agent claude-code
 
 ## Quick start
 
-The example runs on two synthetic profile pages served from your own computer. No account is needed. Run the commands from this folder. Every command accepts `--root <dir>`, and the paths in the steps assume the default `./profiles`.
+The example runs on two synthetic profile pages of an invented person, Haley Meadows, served from your own computer. No account is needed. Run the commands from this folder. Every command accepts `--root <dir>`, and the paths in the steps assume the default `./profiles`.
 
 1. Create an empty collection. Its root is `--root <dir>`, else the environment variable `EXTRACT_MY_PROFILE_ROOT`, else `./profiles` under the current directory.
 
@@ -61,7 +61,7 @@ The example runs on two synthetic profile pages served from your own computer. N
 
    `previous` is the file name of the earlier snapshot of the page, or `null` for the first one.
 
-5. Switch the tab to `profile-v2.html`, which differs from v1 in the headline, one skill and the hourly rate. Capture and save it the same way, with the v2 URL and the new fingerprint. The script prints `changed`. A second snapshot of the same page saved within the same minute gets the suffix `-2`, for example `2026-01-15-0900-profile-2.txt`.
+5. Switch the tab to `profile-v2.html`, which differs from v1 in three places: the headline, the location and one added skill. Capture and save it the same way, with the v2 URL and the new fingerprint. The script prints `changed`. A second snapshot of the same page saved within the same minute gets the suffix `-2`, for example `2026-01-15-0900-profile-2.txt`.
 
 6. Compare the two reads.
 
@@ -98,7 +98,7 @@ The example runs on two synthetic profile pages served from your own computer. N
    ```
    ## Headline
 
-   Senior product designer for data tools
+   Product Designer (UX/UI) | Fintech
    ```
 
    `APPROVED-PROFILE-TEXTS.json`:
@@ -110,7 +110,7 @@ The example runs on two synthetic profile pages served from your own computer. N
        {
          "id": "headline",
          "source": { "type": "inline" },
-         "text": "Senior product designer for data tools",
+         "text": "Product Designer (UX/UI) | Fintech",
          "platforms": ["demo-platform"]
        }
      ]
